@@ -136,7 +136,9 @@ Same as above, but the field is called `protein\_sequence`
         "N50": 6223,
         "min_contig_size": 2506,
         "max_contig_size": 12342,
-        "category": "high-quality" or "medium-quality" or "low-quality"
+        "category": "high-quality" or "medium-quality" or "low-quality",
+        "taxonomic_prediction": "E. coli K12",
+        "taxonomic_confidence": 23.3
     }
 ```
 
@@ -167,7 +169,7 @@ Same as above, but the field is called `protein\_sequence`
                 "...",
                 ...],
         "subcatalog\_url": "http://gmgc.embl.de/downloads/v1.0/GMGC10.human-gut.95nr.fna.gz",
-        "subcatalog\_no\_rare\_no\_rare": "http://gmgc.embl.de/downloads/v1.0/GMGC10.human-gut.no-rare.95nr.fna.gz"
+        "subcatalog\_no\_rare": "http://gmgc.embl.de/downloads/v1.0/GMGC10.human-gut.no-rare.95nr.fna.gz"
     }
 ```
 
@@ -203,7 +205,7 @@ Parameters:
                         # sequences are only provided if the request included `return\_seqs=true`
                      "dna\_sequence": "ATTATACAA...",
                      "protein\_sequence": "MEPATA..."
-                        # Genome bins are noly provided if the request included `return\_bins=true`
+                        # Genome bins are only provided if the request included `return\_bins=true`
                      "genome\_bins":
                         [ "GMBC10.001_023"
                         , "GMBC10.202_232"
