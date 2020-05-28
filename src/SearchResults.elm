@@ -25,6 +25,8 @@ import Svg.Attributes exposing (..)
 
 import Element exposing (Element)
 import Element as E
+import Element.Border as Border
+import Element.Background as Background
 import Element.Input as EI
 import Element.Font as Font
 
@@ -142,8 +144,22 @@ layout model =
             , E.centerX
             ] (E.text "Results for your query")
         , E.column [E.centerX]
-            [E.html (viewActiveHits model)
-            , EI.slider [E.width <| E.px 720]
+            [ E.html (Html.h4 [] [Html.text "E-value filter"])
+            , E.html (viewActiveHits model)
+            , EI.slider [
+                E.width <| E.px 720
+                , E.behindContent
+                    (E.el
+                        [ E.width E.fill
+                        , E.height (E.px 2)
+                        , E.centerY
+                        , Background.color (E.rgb 0.5 0.5 0.5)
+                        , Border.rounded 2
+                        ]
+                        Element.none
+                    )
+
+                ]
                 { onChange = UpdateHitFilter
                 , label = EI.labelAbove [] (E.text "Slide to filter hits by e-value")
                 , min = 1.0
@@ -255,6 +271,8 @@ drawLine ix = g []
                                                                                 2 -> "1.0e-8"
                                                                                 3 -> "1.0e-6"
                                                                                 4 -> "0.0001"
+                                                                                5 -> "0.001"
+                                                                                6 -> "0.01"
                                                                                 _ -> "0.1"
                                                                                 )]
                 ]
