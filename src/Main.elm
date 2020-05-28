@@ -102,7 +102,7 @@ update msg model = case msg of
 
 
 --submitData : QueryModel -> Cmd Msg
-submitData _ = Task.perform (\() -> GotoResults) (Process.sleep 10 |> Task.andThen (\_ -> Task.succeed ()))
+submitData _ = Task.perform (\() -> GotoResults) (Process.sleep 8000 |> Task.andThen (\_ -> Task.succeed ()))
     {- Http.post
         { url = "http://gmgc.embl.de/downloads/v1.0/query/sequence"
         , body = Http.multipartBody
@@ -215,7 +215,7 @@ viewChoice model =
             [ Html.h2 [] [ Html.text "GMGC Tools" ]
             , Grid.simpleRow
                 [ Grid.col [] [ Button.button (buttonStyle HaveSequence) [ Html.text "Find homologues to a sequence (BLAST-like)" ] ]
-                , Grid.col [] [ Button.button (buttonStyle HaveENOG) [ Html.text "Find an gene family (eggNOG orthologs)" ] ]
+                , Grid.col [] [ Button.button (buttonStyle HaveENOG) [ Html.text "Find a gene family (eggNOG orthologs)" ] ]
                 , Grid.col [] [ Button.button (buttonStyle HaveGenome) [ Html.text "Map a (meta)genome to the GMGC"  ] ]
                 ]
             ]
