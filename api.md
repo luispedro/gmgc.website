@@ -179,7 +179,8 @@ Same as above, but the field is called `protein\_sequence`
 
 - query/sequence`
 
-The call is as a `POST` request of up to 50 sequences as an attached FASTA file.
+The call is as a `POST` request of up to 50 sequences as an attached FASTA
+file. The attachment should be called `fasta`
 
 Note that the algorithm will always returns its best matches as _hits_ and it
 is the user's responsibility to filter them appropriately (_i.e._, if no good
