@@ -35,9 +35,11 @@ import Bootstrap.Table as Table
 
 import NiceRound exposing (niceRound)
 import Sample exposing (Sample)
+import Habitat2Color exposing (habitat2color)
+import SampleMap exposing (viewSamplesInMap)
+
 import GMGCv1samples exposing (gmgcV1samples)
 import TestHits exposing (testHits)
-
 
 main : Program () Model Msg
 main =
@@ -291,17 +293,12 @@ viewActive model ix h =
             , rx "2"
             , height (String.fromFloat (60.0 * (1.0 - adj h.evalue)))
             , fill <| if isActive
-                    then (biome2color h.habitat)
+                    then (habitat2color h.habitat)
                     else "#dddddd"
             ] []
 
-
-mapWidth = 520
-mapHeight = 330
-
-gps2coords : Float -> Float -> (Float, Float)
-gps2coords lat lon = (mapWidth / 2 + lon / 180.0 * mapWidth / 2, mapHeight / 2 - lat / 90.0 * mapHeight / 2)
-
+viewMap : Model -> Html Msg
+viewMap model = viewSamplesInMap (List.filterMap (\h -> h.origin) <| activeHits model)
 
 countHabitats : List String -> Dict.Dict String Int
 countHabitats hs =
@@ -350,7 +347,7 @@ displayHabitats model =
                             , width (String.fromInt <| c * 10)
                             , rx "2"
                             , height (String.fromInt 20)
-                            , fill (biome2color h)
+                            , fill (habitat2color h)
                             ] []
                         ,Svg.text_
                             [ x "120"
@@ -361,64 +358,9 @@ displayHabitats model =
                         ]
                         ))))
 
-viewMap : Model -> Html Msg
-viewMap model =
-    svg
-        [ width (String.fromInt mapWidth)
-        , height (String.fromInt mapHeight)
-        ]
-        ([image
-            [ width (String.fromInt mapWidth)
-            , height (String.fromInt mapHeight)
-            , xlinkHref "/assets/World_map_clip_art.svg"
-            ]
-            []
-        ] ++ List.map viewHitInMap (activeHits model))
-
-viewHitInMap : Hit -> Svg Msg
-viewHitInMap h = case h.origin of
-    Nothing -> g [] []
-    Just s -> viewSample s
-
-viewSample : Sample -> Svg Msg
-viewSample s =
-        let
-            (x,y) = gps2coords s.latitude s.longitude
-        in circle [ cx (String.fromFloat x)
-                  , cy (String.fromFloat y)
-                  , r "6"
-                  , fill (biome2color s.habitat)
-                  -- , Svg.Events.onMouseOver (ActivateSample (Just s))
-                  -- , Svg.Events.onMouseOut (ActivateSample Nothing)
-                  ] []
-
 getSample : String -> Maybe Sample
 getSample n  = List.filter (\s -> n == s.name) gmgcV1samples |> List.head
 
 buildTestHit1 h = { evalue = h.evalue, bitscore = h.bitscore, geneID = h.geneID, taxon = h.taxon, habitat = h.habitat, origin = getSample h.origin, isComplete = h.isComplete }
 buildTestHits = List.map buildTestHit1 testHits
 
-biome2color : String -> String
-biome2color b = Dict.get b biome2colorTable |> Maybe.withDefault "#666666"
-
-biome2colorTable : Dict.Dict String String
-biome2colorTable = Dict.fromList [
-    ("cat gut", "#553105ff"),
-    ("dog gut", "#93570fff"),
-    ("human gut", "#dd861dff"),
-    ("pig gut" , "#fec008ff"),
-    ("mouse gut", "#ba1902ff"),
-    ("human nose", "#792597ff"),
-    ("human oral", "#82bb47ff"),
-    ("human skin", "#c797d0ff"),
-    ("human vagina", "#7c9dd9ff"),
-    ("marine", "#0522bbff"),
-    ("soil", "#028f00ff"),
-    ("built-environment", "#000000e6"),
-    ("freshwater", "#0076d5ff"),
-    ("wastewater", "#767171ff"),
-
-
-    ("other human", "#792597ff"),
-    ("mammal gut", "#966906fd")
-    ]
