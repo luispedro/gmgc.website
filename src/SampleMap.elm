@@ -1,5 +1,6 @@
-module SampleMap exposing (viewSamplesInMap)
+module SampleMap exposing (viewSamplesInMap, viewHabitats)
 
+import Dict as Dict
 import Html exposing (Html)
 
 import Svg exposing (..)
@@ -41,4 +42,65 @@ viewSample s =
                   -- , Svg.Events.onMouseOver (ActivateSample (Just s))
                   -- , Svg.Events.onMouseOut (ActivateSample Nothing)
                   ] []
+
+viewHabitats : List String
+                    -> Maybe String
+                    -> (Maybe String -> a)
+                    -> Html a
+viewHabitats habitats hfilter clickMessage =
+    let
+        habitatCounts = countHabitats habitats
+        filtered = Dict.toList habitatCounts |>
+            List.sortBy (\(h,c) -> 0 - c) |>
+            List.filter (\(h,_) -> h /= "-") |>
+            List.take 6
+    in svg
+        [ width "500"
+        , height (String.fromInt <| 60 + 30 * (List.length filtered))
+        ]
+        (filtered |> List.indexedMap (\ix (h,c) ->
+            let
+                isActive = Maybe.withDefault "X" hfilter == h
+            in
+                (Svg.g [ Svg.Events.onClick (clickMessage (if isActive then Nothing else (Just h))) ]
+                    [Svg.rect
+                        [x "0"
+                        , y (String.fromInt <| 60 + 30 * ix)
+                        , fill (if isActive
+                                    then "#cc9933"
+                                    else "#cccccc")
+                        , fillOpacity "0.1"
+                        , rx "4"
+                        , stroke "#000000"
+                        , width "116"
+                        , height "25"
+                        ]
+                        [ ]
+                    ,Svg.text_
+                        [x "4"
+                        , y (String.fromInt <| 60 + 30 * (1+ix) - 15)
+                        , fontSize "12px"]
+                        [ Svg.text h ]
+                    ,rect
+                        [ x "140"
+                        , y (String.fromInt (60 + 30 * ix))
+                        , width (String.fromInt <| c * 10)
+                        , rx "2"
+                        , height (String.fromInt 20)
+                        , fill (habitat2color h)
+                        ] []
+                    ,Svg.text_
+                        [ x "120"
+                        , y (String.fromInt <| 60 + 30 * (1+ix) - 15)
+                        , color "#ffffff"
+                        , fontSize "14px"]
+                        [ Svg.text (String.fromInt c) ]
+                    ]
+                    )))
+
+countHabitats : List String -> Dict.Dict String Int
+countHabitats hs =
+    let
+        add1 a = Just <| 1 + Maybe.withDefault 0 a
+    in List.foldl (\c h -> Dict.update c add1 h) Dict.empty hs
 

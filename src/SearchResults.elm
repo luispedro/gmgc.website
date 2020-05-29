@@ -36,7 +36,7 @@ import Bootstrap.Table as Table
 import NiceRound exposing (niceRound)
 import Sample exposing (Sample)
 import Habitat2Color exposing (habitat2color)
-import SampleMap exposing (viewSamplesInMap)
+import SampleMap exposing (viewSamplesInMap, viewHabitats)
 
 import GMGCv1samples exposing (gmgcV1samples)
 import TestHits exposing (testHits)
@@ -189,7 +189,11 @@ layout model =
         , E.row
             [E.centerX, E.alignTop]
             [E.el [E.alignRight, E.alignTop] (E.html (viewMap model))
-            ,displayHabitats model
+            , E.el [E.alignTop] <| E.html
+                (viewHabitats
+                    (activeHits model |> List.concatMap (\h -> String.split ", " h.habitat))
+                    model.habitatFilter
+                    SetHabitatFilter)
             ]
             {-, E.el [] (E.text (case model.activeSample of
                 Nothing -> ""
@@ -300,63 +304,6 @@ viewActive model ix h =
 viewMap : Model -> Html Msg
 viewMap model = viewSamplesInMap (List.filterMap (\h -> h.origin) <| activeHits model)
 
-countHabitats : List String -> Dict.Dict String Int
-countHabitats hs =
-    let
-        add1 a = Just <| 1 + Maybe.withDefault 0 a
-    in List.foldl (\c h -> Dict.update c add1 h) Dict.empty hs
-
-displayHabitats model =
-    let
-        habitatCounts = activeHits model |> List.concatMap (\h -> String.split ", " h.habitat) |> countHabitats
-        filtered = Dict.toList habitatCounts |>
-            List.sortBy (\(h,c) -> 0 - c) |>
-            List.filter (\(h,_) -> h /= "-") |>
-            List.take 6
-    in E.el [E.alignTop] <| E.html
-        (svg
-            [ width "500"
-            , height (String.fromInt <| 60 + 30 * (List.length filtered))
-            ]
-            (filtered |> List.indexedMap (\ix (h,c) ->
-                let
-                    isActive = Maybe.withDefault "X" model.habitatFilter == h
-                in
-                    (Svg.g [ Svg.Events.onClick (SetHabitatFilter (if isActive then Nothing else (Just h))) ]
-                        [Svg.rect
-                            [x "0"
-                            , y (String.fromInt <| 60 + 30 * ix)
-                            , fill (if isActive
-                                        then "#cc9933"
-                                        else "#cccccc")
-                            , fillOpacity "0.1"
-                            , rx "4"
-                            , stroke "#000000"
-                            , width "116"
-                            , height "25"
-                            ]
-                            [ ]
-                        ,Svg.text_
-                            [x "4"
-                            , y (String.fromInt <| 60 + 30 * (1+ix) - 15)
-                            , fontSize "12px"]
-                            [ Svg.text h ]
-                        ,rect
-                            [ x "140"
-                            , y (String.fromInt (60 + 30 * ix))
-                            , width (String.fromInt <| c * 10)
-                            , rx "2"
-                            , height (String.fromInt 20)
-                            , fill (habitat2color h)
-                            ] []
-                        ,Svg.text_
-                            [ x "120"
-                            , y (String.fromInt <| 60 + 30 * (1+ix) - 15)
-                            , color "#ffffff"
-                            , fontSize "14px"]
-                            [ Svg.text (String.fromInt c) ]
-                        ]
-                        ))))
 
 getSample : String -> Maybe Sample
 getSample n  = List.filter (\s -> n == s.name) gmgcV1samples |> List.head
