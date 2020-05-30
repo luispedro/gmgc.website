@@ -320,7 +320,16 @@ viewBinQ q =
     let
         active = activeBinsQ q
     in Grid.simpleRow [Grid.col []
-        [ Html.h4 [] [ Html.text "You can filter the genomic bins below" ]
+        [ Html.h3 [] [ Html.text "Global Microbial Genomic Bins collection version 1.0 (GMBC 1.0)" ]
+        , Html.p [] [ Html.text "The GMBCv1.0 include >250k genomic bins, grouped into three quality classes: "
+                    , Html.em [] [Html.text "high-quality"]
+                    , Html.text ", "
+                    , Html.em [] [Html.text "medium-quality"]
+                    , Html.text ", and "
+                    , Html.em [] [Html.text "low-quality"]
+                    , Html.text ". High and medium quality bins can be considered MAGs (metagenome-assembled genomes)."
+                    ]
+        , Html.h4 [] [ Html.text "You can filter the genomic bins by taxonomic assignment below" ]
         , Grid.simpleRow
             [Grid.col []
                 [ Html.label [ for "eq" ] [ Html.strong [] [ Html.text "Filter by: " ] ]
@@ -353,12 +362,33 @@ viewBinQ q =
         ] ]
 
 viewGenome = Html.div []
-    [ Html.p [] [Html.text "This is available from the Python tool "
+    [ Html.h3 [] [Html.text "Mapping a prokaryotic genome to the GMGC" ]
+    , Html.p [] [Html.text "This will enable you to find metagenomic samples where your genome is present as well as any MAGs that are similar."]
+    , Html.p [] [Html.text "This functionality is available with the "
                 ,Html.a [ href "http://gmgc.embl.de/help.cgi" ] [ Html.text "Genome2GMGMC" ]
+                ,Html.text " tool."
                 ]
     , Html.p [] [Html.text "Download it from "
                 , Html.a [ href "https://github.com/psj1977/Genome2gmgc" ] [ Html.text "Github" ]
                 , Html.text ". There you will also find instructions on how to use it."
+                ]
+    , Html.h3 [] [Html.text "Mapping a metagenome to the GMGC" ]
+    , Html.p [] [Html.text "There are two possible workflows"]
+    , Html.ol []
+        [ Html.li [] [Html.text "Using the GMGC as a resource for profiling metagenomes"]
+        , Html.li [] [Html.text "Assembling and finding novel data"] ]
+    , Html.h4 [] [Html.text "Profiling a metagenome to the GMGC" ]
+    , Html.p [] [Html.text "Use "
+                , Html.a [ href "https://ngless.embl.de/" ] [ Html.text "NGLess" ]
+                , Html.text " and the "
+                , Html.code [] [Html.text "gmgc"]
+                ,Html.text " module."]
+    , Html.h4 [] [Html.text "Finding the novelty in your metagenome" ]
+    , Html.p [] [Html.text "Use "
+                , Html.a [ href "https://ngless.embl.de/" ] [ Html.text "NGLess" ]
+                , Html.text " to assemble and predict genes and then use "
+                , Html.a [ href "https://github.com/psj1977/Genome2gmgc" ] [ Html.text "Genome2gmgc" ]
+                , Html.text " to assign those genes to the GMGC."
                 ]
     ]
 
