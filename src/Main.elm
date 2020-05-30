@@ -33,6 +33,7 @@ import Browser
 import Browser.Navigation as Nav
 
 import Enog as ENOG
+import GenomeBins as GB
 
 type InitModel = InitModel
 type ModeChoice =
@@ -40,6 +41,7 @@ type ModeChoice =
         | HaveSequence
         | HaveENOG
         | HaveGenome
+        | WantBin
         | WantDownload 
 
 type alias SequenceQuery = 
@@ -51,13 +53,14 @@ type Model =
         | ModelIsGenome
         | ModelIsSequenceQuery SequenceQuery
         | ModelIsENOGQuery String
+        | ModelIsBinQuery String
         | ModelIsDownload
 
 type Msg
     = NoMsg
     | SelectMode ModeChoice
     | UpdateFacontent String
-    | UpdateEQ String
+    | UpdateQ String
     | SetExample
     | SubmitData
     | GotoResults
@@ -87,17 +90,21 @@ update msg model = case msg of
             ModelIsSequenceQuery qmodel -> ( ModelIsLoading , submitData qmodel )
             _ -> ( model, Cmd.none )
     UpdateFacontent fa -> ( ModelIsSequenceQuery { facontent = fa }, Cmd.none )
-    UpdateEQ q -> ( ModelIsENOGQuery q, Cmd.none )
+    UpdateQ q -> case model of
+        ModelIsENOGQuery _ -> ( ModelIsENOGQuery q, Cmd.none )
+        _ -> ( ModelIsBinQuery q, Cmd.none )
     SetExample -> case model of
         ModelIsSequenceQuery _ -> ( ModelIsSequenceQuery { facontent = proteinQueryExampleData }, Cmd.none )
-        _  -> ( ModelIsENOGQuery enogExampleData, Cmd.none )
+        ModelIsENOGQuery _ -> ( ModelIsENOGQuery enogExampleData, Cmd.none )
+        _  -> ( ModelIsBinQuery binQExampleData, Cmd.none )
     SelectMode mode -> case mode of
         Information -> ( model, Cmd.none )
         HaveSequence -> ( ModelIsSequenceQuery { facontent = "" }, Cmd.none )
         HaveENOG -> ( ModelIsENOGQuery "", Cmd.none )
         HaveGenome -> ( ModelIsGenome, Cmd.none )
+        WantBin -> ( ModelIsBinQuery "", Cmd.none )
         WantDownload -> ( ModelIsDownload, Cmd.none )
-    GotoResults -> ( model, Nav.load "SearchResults.elm" )
+    GotoResults -> ( model, Nav.load "SearchResults.html" )
 
 
 
@@ -117,6 +124,7 @@ activeMode m = case m of
     ModelIsLoading -> HaveSequence
     ModelIsENOGQuery _ -> HaveENOG
     ModelIsGenome -> HaveGenome
+    ModelIsBinQuery _ -> WantBin
     ModelIsSequenceQuery _ -> HaveSequence
     ModelIsDownload -> WantDownload
 
@@ -196,6 +204,7 @@ viewModel model = Grid.simpleRow
                     ]
                 ModelIsSequenceQuery qmodel -> viewSequenceQuery qmodel
                 ModelIsENOGQuery q -> viewEnogQ q
+                ModelIsBinQuery q -> viewBinQ q
                 ModelIsGenome-> viewGenome
                 ModelIsDownload -> viewDownload
             ]
@@ -217,6 +226,7 @@ viewChoice model =
                 [ Grid.col [] [ Button.button (buttonStyle HaveSequence) [ Html.text "Find homologues to a sequence (BLAST-like)" ] ]
                 , Grid.col [] [ Button.button (buttonStyle HaveENOG) [ Html.text "Find a gene family (eggNOG orthologs)" ] ]
                 , Grid.col [] [ Button.button (buttonStyle HaveGenome) [ Html.text "Map a (meta)genome to the GMGC"  ] ]
+                , Grid.col [] [ Button.button (buttonStyle WantBin) [ Html.text "Look for genomic bins"  ] ]
                 ]
             ]
         ]
@@ -276,7 +286,7 @@ viewEnogQ q =
         , Grid.simpleRow
             [Grid.col []
                 [ Html.label [ for "eq" ] [ Html.strong [] [ Html.text "Filter by: " ] ]
-                , Html.input [ HAttr.placeholder "query", HAttr.value q, onInput UpdateEQ ] [] ]
+                , Html.input [ HAttr.placeholder "query", HAttr.value q, onInput UpdateQ ] [] ]
             ,Grid.col [] [ Button.button [ Button.small, Button.outlineSecondary, Button.onClick SetExample ] [ Html.text "Example" ]
                 ]
             ]
@@ -293,6 +303,48 @@ viewEnogQ q =
                             [ Table.td [] [ Html.a [href ("http://gmgc.embl.de/search.cgi?search_id="++e.enogID)]
                                                     [Html.text e.enogID ]]
                             , Table.td [] [ Html.text e.description ]
+                            ]) (List.take 1000 active))
+            }
+        , (if List.length active > 1000
+            then Html.p [] [Html.text "... (only 1,000 groups shown)" ]
+            else Html.p [] [])
+        ] ]
+
+activeBinsQ : String -> List GB.GenomeBinGroup
+activeBinsQ q =
+    if String.isEmpty q
+        then GB.genomebins
+        else List.filter (\b -> String.contains q b.taxID) GB.genomebins
+
+viewBinQ q =
+    let
+        active = activeBinsQ q
+    in Grid.simpleRow [Grid.col []
+        [ Html.h4 [] [ Html.text "You can filter the genomic bins below" ]
+        , Grid.simpleRow
+            [Grid.col []
+                [ Html.label [ for "eq" ] [ Html.strong [] [ Html.text "Filter by: " ] ]
+                , Html.input [ HAttr.placeholder "query", HAttr.value q, onInput UpdateQ ] [] ]
+            ,Grid.col [] [ Button.button [ Button.small, Button.outlineSecondary, Button.onClick SetExample ] [ Html.text "Example" ]
+                ]
+            ]
+        , Html.p [] [Html.text <| (String.fromInt <| List.length active) ++ " matches."]
+        , Table.table
+            { options = [ Table.striped, Table.hover ]
+            , thead =  Table.simpleThead
+                [ Table.th [] [ Html.text "Taxonomic prediction (GTDB)" ]
+                , Table.th [] [ Html.text "# high-quality bins" ]
+                , Table.th [] [ Html.text "# medium-quality bins" ]
+                , Table.th [] [ Html.text "# low-quality bins" ]
+                ]
+            , tbody = Table.tbody []
+                    (List.map (\bg ->
+                        Table.tr []
+                            [ Table.td [] [ Html.a [href ("GenomeBinSearchResult.html")]
+                                                    [Html.text bg.taxID ]]
+                            , Table.td [] [ Html.text <| String.fromInt bg.highQ ]
+                            , Table.td [] [ Html.text <| String.fromInt bg.medQ ]
+                            , Table.td [] [ Html.text <| String.fromInt bg.lowQ ]
                             ]) (List.take 1000 active))
             }
         , (if List.length active > 1000
@@ -342,3 +394,7 @@ proteinQueryExampleData = """>Query
 MEPADACAPCNWNEYVPLPNVPQPGRRPFPTFPGQGPFNPKIKWPQGY
 """
 enogExampleData = "Sodium glutamate symporter"
+
+
+binQExampleData : String
+binQExampleData = "Escherichia"

@@ -302,7 +302,7 @@ viewActive model ix h =
             ] []
 
 viewMap : Model -> Html Msg
-viewMap model = viewSamplesInMap (List.filterMap (\h -> h.origin) <| activeHits model)
+viewMap model = viewSamplesInMap (List.filterMap (\h -> h.origin) <| activeHits model) (\_ -> NoOp)
 
 
 getSample : String -> Maybe Sample

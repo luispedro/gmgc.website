@@ -17,8 +17,8 @@ gps2coords : Float -> Float -> (Float, Float)
 gps2coords lat lon = (mapWidth / 2 + lon / 180.0 * mapWidth / 2, mapHeight / 2 - lat / 90.0 * mapHeight / 2)
 
 
-viewSamplesInMap : List Sample -> Html a
-viewSamplesInMap samples =
+viewSamplesInMap : List Sample -> (Maybe Sample -> a) -> Html a
+viewSamplesInMap samples onSampleClick =
     svg
         [ width (String.fromInt mapWidth)
         , height (String.fromInt mapHeight)
@@ -26,21 +26,20 @@ viewSamplesInMap samples =
         ([image
             [ width (String.fromInt mapWidth)
             , height (String.fromInt mapHeight)
-            , xlinkHref "/assets/World_map_clip_art.svg"
+            , xlinkHref "assets/World_map_clip_art.svg"
             ]
             []
-        ] ++ List.map viewSample samples)
+        ] ++ List.map (viewSample onSampleClick) samples )
 
-viewSample : Sample -> Svg a
-viewSample s =
+viewSample : (Maybe Sample -> a) -> Sample -> Svg a
+viewSample onSampleClick s =
         let
             (x,y) = gps2coords s.latitude s.longitude
         in circle [ cx (String.fromFloat x)
                   , cy (String.fromFloat y)
                   , r "6"
                   , fill (habitat2color s.habitat)
-                  -- , Svg.Events.onMouseOver (ActivateSample (Just s))
-                  -- , Svg.Events.onMouseOut (ActivateSample Nothing)
+                  , Svg.Events.onClick (onSampleClick (Just s))
                   ] []
 
 viewHabitats : List String
