@@ -4,13 +4,11 @@ import Bootstrap.Alert as Alert
 import Bootstrap.Button as Button
 import Bootstrap.CDN as CDN
 import Bootstrap.Form as Form
-import Bootstrap.Form.Checkbox as Checkbox
 import Bootstrap.Form.Textarea as Textarea
 import Bootstrap.Utilities.Spacing as Spacing
 import Bootstrap.Grid as Grid
 import Bootstrap.Grid.Col as Col
 import Bootstrap.Grid.Row as Row
-import Bootstrap.Popover as Popover
 import Bootstrap.Text as Text
 import Bootstrap.Table as Table
 import Bootstrap.Spinner as Spinner
@@ -26,16 +24,13 @@ import Http
 import Process as Process
 import Task as Task
 
-import File.Download as Download
-
-import Json.Decode as D
 import Browser
 import Browser.Navigation as Nav
 
 import Enog as ENOG
 import GenomeBins as GB
 
-type InitModel = InitModel
+
 type ModeChoice =
         Information
         | HaveSequence
@@ -50,7 +45,7 @@ type alias SequenceQuery =
 type Model =
         ModelIsInitial
         | ModelIsLoading
-        | ModelIsGenome
+        | ModelIsGMGCFinder
         | ModelIsSequenceQuery SequenceQuery
         | ModelIsENOGQuery String
         | ModelIsBinQuery String
@@ -59,11 +54,10 @@ type Model =
 type Msg
     = NoMsg
     | SelectMode ModeChoice
-    | UpdateFacontent String
     | UpdateQ String
     | SetExample
     | SubmitData
-    | GotoResults
+    | GotoResults -- For testing
 
 
 main : Program () Model Msg
@@ -81,16 +75,14 @@ init () =
     , Cmd.none
     )
 
--- UPDATE
-
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model = case msg of
     NoMsg -> ( model, Cmd.none )
     SubmitData -> case model of
             ModelIsSequenceQuery qmodel -> ( ModelIsLoading , submitData qmodel )
             _ -> ( model, Cmd.none )
-    UpdateFacontent fa -> ( ModelIsSequenceQuery { facontent = fa }, Cmd.none )
     UpdateQ q -> case model of
+        ModelIsSequenceQuery _ -> ( ModelIsSequenceQuery { facontent = q }, Cmd.none )
         ModelIsENOGQuery _ -> ( ModelIsENOGQuery q, Cmd.none )
         _ -> ( ModelIsBinQuery q, Cmd.none )
     SetExample -> case model of
@@ -101,15 +93,17 @@ update msg model = case msg of
         Information -> ( model, Cmd.none )
         HaveSequence -> ( ModelIsSequenceQuery { facontent = "" }, Cmd.none )
         HaveENOG -> ( ModelIsENOGQuery "", Cmd.none )
-        HaveGenome -> ( ModelIsGenome, Cmd.none )
+        HaveGenome -> ( ModelIsGMGCFinder, Cmd.none )
         WantBin -> ( ModelIsBinQuery "", Cmd.none )
         WantDownload -> ( ModelIsDownload, Cmd.none )
     GotoResults -> ( model, Nav.load "SearchResults.html" )
 
 
 
---submitData : QueryModel -> Cmd Msg
-submitData _ = Task.perform (\() -> GotoResults) (Process.sleep 8000 |> Task.andThen (\_ -> Task.succeed ()))
+submitData : SequenceQuery -> Cmd Msg
+submitData _ =
+    -- TEST CODE: literally sleep for 8 seconds and then advance to the next page
+    Task.perform (\() -> GotoResults) (Process.sleep 8000 |> Task.andThen (\_ -> Task.succeed ()))
     {- Http.post
         { url = "http://gmgc.embl.de/downloads/v1.0/query/sequence"
         , body = Http.multipartBody
@@ -123,7 +117,7 @@ activeMode m = case m of
     ModelIsInitial -> Information
     ModelIsLoading -> HaveSequence
     ModelIsENOGQuery _ -> HaveENOG
-    ModelIsGenome -> HaveGenome
+    ModelIsGMGCFinder -> HaveGenome
     ModelIsBinQuery _ -> WantBin
     ModelIsSequenceQuery _ -> HaveSequence
     ModelIsDownload -> WantDownload
@@ -205,13 +199,14 @@ viewModel model = Grid.simpleRow
                 ModelIsSequenceQuery qmodel -> viewSequenceQuery qmodel
                 ModelIsENOGQuery q -> viewEnogQ q
                 ModelIsBinQuery q -> viewBinQ q
-                ModelIsGenome-> viewGenome
+                ModelIsGMGCFinder-> viewGMGCFinder
                 ModelIsDownload -> viewDownload
             ]
         ]
 
 viewChoice model =
     let
+        -- The active button is `Button.info`, the inactive one is `Button.onlineSecondary`
         buttonStyle who =
             if who == activeMode model then
                 [ Button.info, Button.onClick (SelectMode who) ]
@@ -254,17 +249,13 @@ viewSequenceQuery qmodel =
                     , Textarea.textarea <|
                         [ Textarea.id "fasta"
                         , Textarea.rows 10
-                        , Textarea.onInput UpdateFacontent
+                        , Textarea.onInput UpdateQ
                         , Textarea.attrs [ placeholder placeholderText ]
                         , Textarea.value qmodel.facontent
                         ]
                             ++ (case faerror of
-                                    Nothing ->
-                                        []
-
-                                    Just _ ->
-                                        [ Textarea.danger ]
-                               )
+                                    Nothing -> []
+                                    Just _ -> [ Textarea.danger ])
                     , Grid.row [ Row.rightXl ]
                         [ Grid.col [] [ Html.text "" ]
                         , Grid.col [ Col.textAlign Text.alignXsRight ]
@@ -361,7 +352,7 @@ viewBinQ q =
             else Html.p [] [])
         ] ]
 
-viewGenome = Html.div []
+viewGMGCFinder = Html.div []
     [ Html.h3 [] [Html.text "Mapping a prokaryotic genome to the GMGC" ]
     , Html.p [] [Html.text "This will enable you to find metagenomic samples where your genome is present as well as any MAGs that are similar."]
     , Html.p [] [Html.text "This functionality is available with the "

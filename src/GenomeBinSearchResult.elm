@@ -142,25 +142,22 @@ layout model =
             , E.centerX
             ] (E.text "Results for your query")
         , E.column [E.centerX]
-            [E.html <|
-                    let
-                        buttonStyle msg state =
-                            if state then
-                                [ Button.info, Button.onClick (msg <| not state) ]
-                            else
-                                [ Button.outlineSecondary, Button.onClick (msg <| not state) ]
-                    in Grid.simpleRow
-                        [ Grid.col []
-                            [ Grid.simpleRow
-                                [ Grid.col [] [Html.h4 [] [Html.text "Use the buttons to filter bins"] ] ]
-                            , Grid.simpleRow
-                                    [ Grid.col [] [ Button.button (buttonStyle SetHighFilter model.keepHigh) [ Html.text <| "High quality" ] ]
-                                    , Grid.col [] [ Button.button (buttonStyle SetMedFilter model.keepMed) [ Html.text <| "Medium quality" ] ]
-                                    , Grid.col [] [ Button.button (buttonStyle SetLowFilter model.keepLow) [ Html.text <| "Low quality" ] ]
-                                    ]
-                            ]
+            (let
+                    buttonStyle msg state =
+                        if state then
+                            [ Button.info, Button.onClick (msg <| not state) ]
+                        else
+                            [ Button.outlineSecondary, Button.onClick (msg <| not state) ]
+                in
+                    [ E.el [] (E.text "Use the buttons to filter bins")
+                    , E.row [E.spacing 12]
+                        [ E.html <| Button.button (buttonStyle SetHighFilter model.keepHigh) [ Html.text <| "High quality" ]
+                        , E.html <| Button.button (buttonStyle SetMedFilter model.keepMed) [ Html.text <| "Medium quality" ]
+                        , E.html <| Button.button (buttonStyle SetLowFilter model.keepLow) [ Html.text <| "Low quality" ]
                         ]
-            ]
+                    ]
+
+            )
         , E.row
             [E.centerX, E.alignTop]
             [E.el [E.alignRight, E.alignTop] (E.html (viewMap model))
@@ -205,7 +202,7 @@ layout model =
             ,E.text <| " (" ++ (activeBins model |> List.length |> String.fromInt) ++ " hits)."
             ]
         , E.html (Html.hr [] [])
-        , E.html (
+        , E.html ( -- Boostrap's tables are better
                 Table.table
                     { options = [ Table.striped, Table.hover ]
                     , thead =  Table.simpleThead

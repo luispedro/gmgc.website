@@ -30,9 +30,6 @@ import Element.Background as Background
 import Element.Input as EI
 import Element.Font as Font
 
-import Bootstrap.CDN as CDN
-import Bootstrap.Table as Table
-
 import NiceRound exposing (niceRound)
 import Sample exposing (Sample)
 import Habitat2Color exposing (habitat2color)
@@ -122,16 +119,12 @@ update msg model = case msg of
 
 view : Model -> Browser.Document Msg
 view model =
-    { title = "Results for your query"
+    { title = "Results for your search query"
     , body = [ CDN.stylesheet
              , Element.layout [] (layout model) ]
     }
 
-colHeader ch = E.el
-    [Font.size 18
-    ,Font.bold
-    ] (E.text ch)
-
+layout : Model -> E.Element Msg
 layout model =
     E.column
         [E.spacing 12
@@ -173,18 +166,18 @@ layout model =
             , viewEvalueCutoff model
             ]
         , E.column [E.centerX]
-            [E.html <|
-                    let
+            [E.row []
+                ( let
                         buttonStyle who =
                             if who == model.onlyComplete then
                                 [ Button.info, Button.onClick (SetShowComplete who) ]
 
                             else
                                 [ Button.outlineSecondary, Button.onClick (SetShowComplete who) ]
-                    in Grid.simpleRow
-                        [ Grid.col [] [ Button.button (buttonStyle False) [ Html.text "Show all hits" ] ]
-                        , Grid.col [] [ Button.button (buttonStyle True) [ Html.text "Show only complete ORFs" ] ]
-                        ]
+                    in
+                        [ E.el [E.padding 10] (E.html <| Button.button (buttonStyle False) [ Html.text "Show all hits" ] )
+                        , E.el [E.padding 10] (E.html <| Button.button (buttonStyle True) [ Html.text "Show only complete ORFs" ] ) ]
+                )
             ]
         , E.row
             [E.centerX, E.alignTop]
@@ -224,7 +217,7 @@ layout model =
             ,E.text <| " (" ++ (activeHits model |> List.length |> String.fromInt) ++ " hits)."
             ]
         , E.html (Html.hr [] [])
-        , E.html (
+        , E.html ( -- Element-ui's tables are not as good as Bootstrap's so use Bottstrap here
                 Table.table
                     { options = [ Table.striped, Table.hover ]
                     , thead =  Table.simpleThead
