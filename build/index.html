@@ -1,0 +1,50 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Main</title>
+  <link rel="stylesheet" href="/css/bootstrap-4.5.0.min.css" integrity="sha384-z0mPBqIkCDzqBMRLl70PBCGtGm4LnygrRArgUnIJIe/X4g8ey1dfhnGUOVKxKYEv">
+  <link rel="stylesheet" href="/css/gmgc-webview-1.0.css">
+  <script src="/js/jquery-3.5.1.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2"></script>
+  <script src="/js/popper-1.16.0.min.js" integrity="sha384-gTayVtprqu+qA2z4cckmoEV6iHTos9E5OMBkEI9lk16ZRwFTetzRualcbW2BIB7Q"></script>
+  <script src="/js/bootstrap-4.5.0.min.js" integrity="sha384-NXLmGVDGmi8LTbUnYJOO714OlHpgeYyn+z+rwvOsHJh8/nMNWPjHntIyMeOtVAi1" crossorigin="anonymous"></script>
+  <!-- templating in javascript -->
+  <script src="/js/jsrender-1.0.6.min.js" integrity="sha384-cMelFZz0fC97bQ2GOoN9iR1xT59YhapVDbocdw/PwaaSz0eZlW3T2QOADHtcWjL2"></script>
+  <!-- Vega lite -->
+  <script src="/js/vega-5.12.1.min.js" integrity="sha384-loxbzTH/cGIf6gGTns9s6zIZ/8xKEjzp2CECknWFG6RYWROXornvubAmY72H2Q21"></script>
+  <script src="/js/vega-lite-4.12.2.min.js" integrity="sha384-K7uwGWmmGTPh31V9+w8IUzxSzQUvxs05fCdkaJeXWHTquRWxgOe4PlrTmNJir7NQ"></script>
+  <script src="/js/vega-embed-6.8.0.min.js" integrity="sha384-jq6hGoDoAV1NZHbA1JTY3a9cGg2OjvuX+3Mxi/GFxxOrf2eVe/jZS3DkAgB20FJZ"></script>
+
+  <script src="/js/gmgc-webview-1.0.js"></script>
+  <!-- Templates / snippets -->
+  <script id="table_row_tmpl" type="text/x-jsrender">
+    <tr>
+      <td><a href="http://gmgc.embl.de/search.cgi?search_id={{:gene_id}}">{{:gene_id}}</a></td>
+      <td>{{:evalue}}
+        <button id="{{:gene_id}}_show_algn" class="btn btn-sm btn-light">show alignment</button>
+      </td>
+      <td>FIXME {{!-- {{:taxon.name}} ({{:taxon.rank}}) --}}</td>
+    </tr>
+  </script>
+  <!-- Hack to simplify launching Elm's code -->
+  <script>
+    // The target .js file has the same name as the current document
+    var file = window.location.pathname.split("/").pop();
+    prefix = file.substr(0, file.lastIndexOf("."));
+    // To inject a script tag we cannot create it from a string
+    // See gotchas: https://www.danielcrabtree.com/blog/25/gotchas-with-dynamically-adding-script-tags-to-html
+    var script = document.createElement("script");
+    script.onload = function () {
+      // This loads Elm, the component is also named after the filename
+      var app = Elm[prefix].init({
+        node: document.getElementById('myapp')
+      });
+    };
+    script.src = `js/${prefix}.js`;
+    document.head.appendChild(script);
+  </script>
+</head>
+
+<body>
+  <div id="myapp"></div>
+</body>
+</html>
