@@ -7,7 +7,7 @@ import Task as Task
 
 import Html exposing (Html)
 import Html.Events exposing (onClick)
-import Html.Attributes exposing (href, colspan)
+import Html.Attributes as HA exposing (href, colspan)
 
 import Bootstrap.Alert as Alert
 import Bootstrap.Button as Button
@@ -245,15 +245,15 @@ layout model =
             ]
         , E.row []
             [E.text "Download all as "
-            ,E.html <| Html.a [href ("#")] [ Html.text "Protein" ]
+            ,E.html <| Html.a [HA.id "protein_download", href ("#")] [ Html.text "Protein" ]
             ,E.text " or as "
-            ,E.html <| Html.a [href ("#")] [ Html.text "DNA" ]
+            ,E.html <| Html.a [HA.id "dna_download", href ("#")] [ Html.text "DNA" ]
             ,E.text <| " (" ++ (activeHits model |> List.length |> String.fromInt) ++ " hits)."
             ]
         , E.html (Html.hr [] [])
         , E.html ( -- Element-ui's tables are not as good as Bootstrap's so use Bottstrap here
                 Table.table
-                    { options = [ Table.striped, Table.hover ]
+                    { options = [ Table.striped, Table.hover, Table.attr (HA.id "hits_table") ]
                     , thead =  Table.simpleThead
                         [ Table.th [] [ Html.text "Sequence name" ]
                         , Table.th [] [ Html.text "E-value" ]
