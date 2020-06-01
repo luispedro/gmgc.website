@@ -2,8 +2,12 @@ module SearchResults exposing (..)
 
 import Dict as Dict
 import Browser
+import Process as Process
+import Task as Task
+
 import Html exposing (Html)
-import Html.Attributes exposing (href)
+import Html.Events exposing (onClick)
+import Html.Attributes exposing (href, colspan)
 
 import Bootstrap.Alert as Alert
 import Bootstrap.Button as Button
@@ -48,6 +52,12 @@ main =
     }
 
 
+type alias Alignment =
+    { seqQ : String
+    , match: String
+    , seqH : String
+    }
+
 type alias Hit =
     { evalue : Float
     , bitscore : Float
@@ -56,6 +66,8 @@ type alias Hit =
     , habitat : String
     , origin : Maybe Sample
     , isComplete : Bool
+    , showAlignment : Bool
+    , alignment : Maybe String
     }
 
 type alias Model =
@@ -99,6 +111,8 @@ type Msg
     | SetShowComplete Bool
     | SetHabitatFilter (Maybe String)
     | ActivateSample (Maybe Sample)
+    | ShowAlignment Int
+    | SetAlignment Int
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model = case msg of
@@ -114,7 +128,27 @@ update msg model = case msg of
     ActivateSample s ->
           ( { model | activeSample = s }
           , Cmd.none )
+    ShowAlignment ix ->
+          ( { model | hits = showAlignmentFor ix model.hits }
+          , Task.perform (\() -> SetAlignment ix) (Process.sleep 2000 |> Task.andThen (\_ -> Task.succeed ())))
+    SetAlignment ix ->
+          ( { model | hits = setAlignmentFor ix model.hits }
+          , Cmd.none )
     _ -> ( model, Cmd.none )
+
+
+showAlignmentFor : Int -> List Hit -> List Hit
+showAlignmentFor ix = List.indexedMap <| \ix2 h ->
+    if ix == ix2
+        then { h | showAlignment = True }
+        else h
+
+setAlignmentFor : Int -> List Hit -> List Hit
+setAlignmentFor ix = List.indexedMap <| \ix2 h ->
+    if ix == ix2
+        then { h | alignment = Just exampleAlignment }
+        else h
+
 
 
 view : Model -> Browser.Document Msg
@@ -226,13 +260,29 @@ layout model =
                         , Table.th [] [ Html.text "Taxon (predicted)" ]
                         ]
                     , tbody = Table.tbody []
-                            (List.map (\h ->
-                                Table.tr []
+                            (List.concat <| List.indexedMap (\ix h ->
+                                [Table.tr []
                                     [ Table.td [] [ Html.a [href ("http://gmgc.embl.de/search.cgi?search_id="++h.geneID)]
                                                             [Html.text h.geneID ]]
-                                    , Table.td [] [ Html.text (niceRound h.evalue) ]
+                                    , Table.td [] [ Html.text (niceRound h.evalue ++ " ")
+                                                    , Button.button [Button.secondary, Button.light, Button.small, Button.onClick (ShowAlignment ix)] [ Html.text "show alignment" ]
+                                                  --, Html.a [href "#", onClick (ShowAlignment ix)] [Html.text " [show alignment]"]
+                                                  ]
                                     , Table.td [] [ Html.text h.taxon ]
-                                    ]) (activeHits model))
+                                    ]
+                                ] ++ (if h.showAlignment
+                                        then
+                                            [Table.tr [] [ Table.td [Table.cellAttr <| colspan 3] [Html.p []
+                                                    (case h.alignment of
+                                                            Nothing -> [Html.p []
+                                                                                [Spinner.spinner [ Spinner.color Text.primary, Spinner.grow ] []
+                                                                                ,Html.text "Computing..."]]
+                                                            Just al -> [Html.pre [] [Html.text al] ] -- (al.seqQ ++"\n"++al.match ++ "\n" ++ al.seqH)] ]
+                                                    ) ]
+                                                    ] ]
+                                        else [])
+
+                                    ) (activeHits model))
                     } ) ]
 
 
@@ -301,6 +351,29 @@ viewMap model = viewSamplesInMap (List.filterMap (\h -> h.origin) <| activeHits 
 getSample : String -> Maybe Sample
 getSample n  = List.filter (\s -> n == s.name) gmgcV1samples |> List.head
 
-buildTestHit1 h = { evalue = h.evalue, bitscore = h.bitscore, geneID = h.geneID, taxon = h.taxon, habitat = h.habitat, origin = getSample h.origin, isComplete = h.isComplete }
+buildTestHit1 h = { evalue = h.evalue, bitscore = h.bitscore, geneID = h.geneID, taxon = h.taxon, habitat = h.habitat, origin = getSample h.origin, isComplete = h.isComplete, alignment = Nothing, showAlignment = False }
+
+buildTestHits : List Hit
 buildTestHits = List.map buildTestHit1 testHits
 
+{-
+exampleAlignment =
+    { seqQ  =  "AALAMSALMALSJLAJLACAOSIJDAOSIJDALAASKJDASLKJALCEMALWPQRODASLKJALCKMALWPQRODASLKJALCKMALWPQRODASLKJALCKMALWPQROQUPJALSFAASLUFPASUFASFJA"
+    , match =  "||||||||||||||||||||||||||||||||.--||||||||||||.||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||.|||||||||||||||"
+    , seqH  =  "AALAMSALMALSJLAJLACAOSIJDAOSIJDAI  SKJDASLKJALCKMALWPQRODASLKJALCKMALWPQRODASLKJALCKMALWPQRODASLKJALCKMALWPQROQUPJALSFVASLUFPASUFASFJA"
+    }
+-}
+exampleAlignment : String
+exampleAlignment = """
+Identity: 97.4%
+
+AALAMSALMALSJLAJLACAOSIJDAOSIJDALAASKJDASLKJALCEMALWPQRODASLKJALCKMALWPQRODASLKJ
+||||||||||||||||||||||||||||||||.  ||||||||||||.||||||||||||||||||||||||||||||||
+AALAMSALMALSJLAJLACAOSIJDAOSIJDAI--SKJDASLKJALCKMALWPQRODASLKJALCKMALWPQRODASLKJ
+
+
+
+ALCCKMALWPQRODASLKJALCKMALWPQROQUPJALSFAASLUFPASUFASFJA
+||| |||||||||||||||||||||||||||||||||||.|||||||||||||||
+ALC-KMALWPQRODASLKJALCKMALWPQROQUPJALSFVASLUFPASUFASFJA
+"""
