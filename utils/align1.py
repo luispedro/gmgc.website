@@ -10,11 +10,31 @@ HTML_HEADER = '''
         <meta charset="UTF-8" />
         <title>Alignment result</title>
         <style type="text/css">
-            .match{width:15px; height:19px; display:inline-block;}
-            .gap{width:15px; height:19px; display:inline-block;}
-            .close{width:15px; height:19px; display:inline-block;}
-            .mismatch{width:15px; height:19px; display:inline-block;}
-            span{font-family: monospace;text-align:center;font-size:15pt}
+            .match {
+                width:15px;
+                height:19px;
+                display:inline-block;
+            }
+            .gap {
+                width:15px;
+                height:19px;
+                display:inline-block;
+            }
+            .close {
+                width:15px;
+                height:19px;
+                display:inline-block;
+            }
+            .mismatch {
+                width:15px;
+                height:19px;
+                display:inline-block;
+            }
+            .alignment span {
+                font-family: monospace;
+                text-align:center;
+                font-size:15pt
+                }
         </style>
     </head>
     <body>
@@ -49,11 +69,18 @@ def alignment(protein_query, protein_target, line_length, output_format='text/pl
 
     out_text = []
 
-    out_text.append('identity: '+ '{:.2f}%'.format(identity*100))
-    out_text.append('Query coverage: {:.2f}%(positions {}-{}; total length {})'.format(query_coverage*100,query_start,query_end,len(protein_query)))
+    out_text.append('identity: '+ '{:.1%}'.format(identity))
+    out_text.append('Query coverage: {:.1%} (positions {}-{}; total length {})' \
+            .format(query_coverage,
+                    query_start,
+                    query_end,
+                    len(protein_query)))
     out_text.append(
-        'Unigene coverage: {:.2f}%(positions {}-{}; total length {})\n'.format(target_coverage * 100, target_start, target_end,
-                                                                           len(protein_target)))
+        'Unigene coverage: {:.1%} (positions {}-{}; total length {})\n' \
+            .format(target_coverage,
+                    target_start,
+                    target_end,
+                    len(protein_target)))
 
     out_html = ['<div class="alignment">']
     out_html.append( '<p class="summary">{}</p>'.format(out_text[0]) )
