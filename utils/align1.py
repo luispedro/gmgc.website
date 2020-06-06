@@ -61,14 +61,14 @@ def alignment(protein_query, protein_target, line_length, output_format='text/pl
     out_html.append( '<p class="summary">{}</p><br/>'.format(out_text[2].strip('\n')) )
 
     out_html.append( '<p class="alignment">' )
-    for row_index in range(len(query_align)//length + 1):
-        if row_index < len(query_align)//length:
+    for row_index in range(len(query_align)//line_length + 1):
+        if row_index < len(query_align)//line_length:
             row_mid = ''
             html_query = ''
             html_mid = ''
             html_target = ''
 
-            for column_index in range(row_index*length , (row_index+1)*length):
+            for column_index in range(row_index*line_length , (row_index+1)*line_length):
                 if query_align[column_index] == '-' or target_aligh[column_index] == '-':
                     row_mid = row_mid+ ' '
                     html_query = html_query + '<span class="gap">{}</span>'.format(query_align[column_index])
@@ -97,9 +97,9 @@ def alignment(protein_query, protein_target, line_length, output_format='text/pl
                     html_query = html_query + '<span class="match", >{}</span>'.format(query_align[column_index])
                     html_mid = html_mid + '<span class="match">|</span>'
                     html_target = html_target + '<span class="match">{}</span>'.format(target_aligh[column_index])
-            out_text.append(query_align[row_index*length: (row_index+1)*length])
+            out_text.append(query_align[row_index*line_length: (row_index+1)*line_length])
             out_text.append(row_mid)
-            out_text.append(target_aligh[row_index*length: (row_index+1)*length] + '\n')
+            out_text.append(target_aligh[row_index*line_length: (row_index+1)*line_length] + '\n')
             out_html.append( html_query + '<br/>' )
             out_html.append( html_mid + '<br/>' )
             out_html.append( html_target + '<br/><br/>' )
@@ -109,7 +109,7 @@ def alignment(protein_query, protein_target, line_length, output_format='text/pl
             html_query = ''
             html_mid = ''
             html_target = ''
-            for column_index in range(row_index*length , len(target_aligh)):
+            for column_index in range(row_index*line_length , len(target_aligh)):
                 if query_align[column_index] == '-' or target_aligh[column_index] == '-':
                     row_mid = row_mid+ ' '
                     html_query = html_query + '<span class="gap">{}</span>'.format(query_align[column_index])
@@ -136,9 +136,9 @@ def alignment(protein_query, protein_target, line_length, output_format='text/pl
                     html_query = html_query + '<span class="match">{}</span>'.format(query_align[column_index])
                     html_mid = html_mid + '<span class="match">|</span>'
                     html_target = html_target + '<span class="match">{}</span>'.format(target_aligh[column_index])
-            out_text.append(query_align[row_index*length:len(query_align)])
+            out_text.append(query_align[row_index*line_length:len(query_align)])
             out_text.append(row_mid)
-            out_text.append(target_aligh[row_index*length: len(target_aligh)])
+            out_text.append(target_aligh[row_index*line_length: len(target_aligh)])
             out_html.append( html_query + '<br/>' )
             out_html.append( html_mid + '<br/>' )
             out_html.append( html_target + '</p></div>' )
