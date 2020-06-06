@@ -108,7 +108,7 @@ def alignment(protein_query, protein_target, line_length, output_format='text/pl
                         close
                         """
                         html_query = html_query + '<span class="close">{}</span>'.format(query_align[column_index])
-                        html_mid = html_mid + '<span class="close">&#58</span>'
+                        html_mid = html_mid + '<span class="close">&#58;</span>'
                         html_target = html_target + '<span class="close">{}</span>'.format(target_aligh[column_index])
                     else:
                         """
@@ -149,7 +149,7 @@ def alignment(protein_query, protein_target, line_length, output_format='text/pl
                         close
                         """
                         html_query = html_query + '<span class="close">{}</span>'.format(query_align[column_index])
-                        html_mid = html_mid + '<span class="close">&#58</span>'
+                        html_mid = html_mid + '<span class="close">&#58;</span>'
                         html_target = html_target + '<span class="close">{}</span>'.format(target_aligh[column_index])
                     else:
                         """
