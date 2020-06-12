@@ -1,9 +1,11 @@
 # GMGC API
 
-The base URL for API calls is `http://gmgc.embl.de/api/v1.0/` and it returns JSON.
+The base URL for API calls is `http://gmgc.embl.de/api/v1.0/` and API calls
+return JSON (except where noted).
 
 Also, note that the resources can all be [downloaded](/download.cgi) for local
-processing. For large scale analyses, that will be more efficient.
+processing. For large scale analyses, that will be more efficient than
+repeatedly calling the API.
 
 ## Lookup
 
@@ -29,6 +31,7 @@ Example output
         "complete": 1 or 0
     }
 ```
+
 
 - `unigene/\<gene\_id\>/dna\_sequence`
 
@@ -120,6 +123,7 @@ Same as above, but the field is called `protein\_sequence`
     }
 ```
 
+
 ### Genome bins
 
 - `genome\_bin/\<genome\_bin\_id\>`
@@ -156,6 +160,32 @@ Same as above, but the field is called `protein\_sequence`
     }
 ```
 
+### Batched queries
+
+There are also plural versions of the lookups above, that work with `POST`:
+
+- `unigenes`
+- `unigenes/features`
+- `unigenes/samples`
+- `unigenes/genome_bins`
+- `unigenes/dna_sequence`
+- `unigenes/protein_sequence`
+- `samples`
+- `genome_bins'
+
+
+These correspond to the calls above, except that they work for multiple inputs,
+passed in as a JSON (with correct content type), in the format: `{"names":
+["gene-A", "gene-B"]}` (or `sample A`, or `genome_bin A`...).
+
+E.g:
+
+```bash
+curl --header "Content-Type: application/json" \
+        --request POST \
+        --data '{"names": ["GMGC10.003_873_867.PHOA", "GMGC10.016_471_114.PHOA"]}' \
+        'http://gmgc.embl.de/api/v1.0/unigenes/genome_bins'
+```
 
 ### Habitats
 
@@ -172,6 +202,7 @@ Same as above, but the field is called `protein\_sequence`
         "subcatalog\_no\_rare": "http://gmgc.embl.de/downloads/v1.0/GMGC10.human-gut.no-rare.95nr.fna.gz"
     }
 ```
+
 
 ## Search
 
