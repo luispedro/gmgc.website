@@ -1,4 +1,6 @@
-# GMGC API
+# GMGC API (Version 1.0)
+
+The webserver provides an API for advanced users as described in this page.
 
 The base URL for API calls is `http://gmgc.embl.de/api/v1.0/` and API calls
 return JSON (except where noted).
@@ -6,6 +8,20 @@ return JSON (except where noted).
 Also, note that the resources can all be [downloaded](/download.cgi) for local
 processing. For large scale analyses, that will be more efficient than
 repeatedly calling the API.
+
+## Version
+
+- `version`
+
+Returns the version of the resource.
+
+```
+{
+    "gmgc-version": "1.0.0",
+    "last-updated": "Jun 1 2020"
+}
+
+```
 
 ## Lookup
 
