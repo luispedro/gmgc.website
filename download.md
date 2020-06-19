@@ -7,7 +7,7 @@ catalog (210,478,083 genes). Note that the 90% catalog is a subcatalog of the
 main one and identifiers are kept consistent.
 
 Files can also be downloaded from our [GMGC10.data git-annex
-repository](https://git.embl.de/coelho/gmgc10.data). This recommended only for
+repository](https://git.embl.de/coelho/GMGC10.data). This recommended only for
 more advanced users, but may be a better interface for settings such as an HPC
 cluster (where direct web access is not available) and provides automated data
 integrity checks.
