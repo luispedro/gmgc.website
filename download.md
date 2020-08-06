@@ -23,7 +23,7 @@ read mapping.
 
 ### ORF clustering table
 
-[GMGC.relationships.txt](http://gmgc.embl.de/downloads/v1.0/GMGC.relationships.txt)
+[GMGC.relationships.txt.gz](http://gmgc.embl.de/downloads/v1.0/GMGC.relationships.txt.gz)
 
 This table shows the structure of the clusters at at 95%. Note that this table
 requires _ca._ 300 GB to store and contains 8,533,537,889 rows.
@@ -51,9 +51,9 @@ At the end of the process, the representative ORF for each cluster is assigned
 a `GMGC10` name (`GMGC10` being the abbreviated form of `GMGC 1.0`).
 
 - [ProGenomes2 renaming
-  table](http://gmgc.embl.de/downloads/v1.0/metadata/ProGenomes2.rename.tsv)
+  table](http://gmgc.embl.de/downloads/v1.0/metadata/ProGenomes2.rename.tsv.gz)
 - Final GMGC10 renaming is part of the [unigene metadata
-  table](http://gmgc.embl.de/downloads/v1.0/metadata/GMGC10.meta.tsv)
+  table](http://gmgc.embl.de/downloads/v1.0/metadata/GMGC10.meta.tsv.gz)
 
 ### Protein (90% amino acid identity clustering) and gene families cluster table
 
@@ -63,12 +63,12 @@ clustering table. The first column identifies the original Unigene, then the
 next two columns identify the representative gene in the 90% amino acid and the
 gene families clusterings, respectively.
 
-- [Clustering table](http://gmgc.embl.de/downloads/v1.0/GMGC10.cluster.tsv)
+- [Clustering table](http://gmgc.embl.de/downloads/v1.0/GMGC10.cluster.tsv.gz)
 
 ## Unigene Metadata & Annotations
 
 The [unigene metadata
-table](http://gmgc.embl.de/downloads/v1.0/metadata/GMGC10.meta.tsv) contains
+table](http://gmgc.embl.de/downloads/v1.0/metadata/GMGC10.meta.tsv.gz) contains
 basic information for each unigene: its original name (which indicates which
 sample the representative was assembled from, the habitat of this sample, the
 size (in nucleotides), and whether the ORF is a complete ORF.
@@ -76,7 +76,7 @@ size (in nucleotides), and whether the ORF is a complete ORF.
 ORFs are annotated to the environment from which they were assembled. Unigenes
 aggregate multiple ORFs and can, thus, represent multiple environments. The
 filegq
-[GMGC10.gene-environment.tsv](http://gmgc.embl.de/downloads/v1.0/metadata/GMGC10.gene-environment.tsv)
+[GMGC10.gene-environment.tsv](http://gmgc.embl.de/downloads/v1.0/metadata/GMGC10.gene-environment.tsv.gz)
 contains the link between genes and environments:
 
 - `0`: the unigene does not contain any ORF from the respective environment,
@@ -86,17 +86,17 @@ contains the link between genes and environments:
 
 
 Genes were assigned taxonomy as described in the manuscript: [Taxonomic
-assignments](http://gmgc.embl.de/downloads/v1.0/metadata/GMGC10.taxonomy.tsv)
+assignments](http://gmgc.embl.de/downloads/v1.0/metadata/GMGC10.taxonomy.tsv.gz)
 
 The GMGC was also annotated with [eggnog-mapper](http://eggnog-mapper.embl.de/):
 [GMGC10.emapper2.annotations.tsv.gz](http://gmgc.embl.de/downloads/v1.0/GMGC10.emapper2.annotations.tsv.gz)
 (this file is [NGLess](https://ngless.embl.de/)-compatible).
 
 CARD/ResFAM annotations (in [NGLess](https://ngless.embl.de/)-compatible
-format) are also available as [GMGC10.card\_resfam.tsv](GMGC10.card_resfam.tsv)
+format) are also available as [GMGC10.card\_resfam.tsv](GMGC10.card_resfam.tsv.gz)
 
 [Per sample
-metadata](http://gmgc.embl.de/downloads/v1.0/metadata/GMGC10.sample.meta.tsv)
+metadata](http://gmgc.embl.de/downloads/v1.0/metadata/GMGC10.sample.meta.tsv.gz)
 includes the habitat, GPS coordinates, number of basepairs and other
 information on each sample. Note that some samples use an internal name in
 addition to the public one.
