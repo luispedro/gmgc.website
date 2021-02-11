@@ -55,15 +55,15 @@ a `GMGC10` name (`GMGC10` being the abbreviated form of `GMGC 1.0`).
 - Final GMGC10 renaming is part of the [unigene metadata
   table](http://gmgc.embl.de/downloads/v1.0/metadata/GMGC10.meta.tsv.gz)
 
-### Protein (90% amino acid identity clustering) and gene families cluster table
+### Protein clustering tables
 
-The protein-level (90% amino-acid identity) catalog and gene families were
-built from clustering the 95\% unigenes. These are available as a single
-clustering table. The first column identifies the original Unigene, then the
-next two columns identify the representative gene in the 90% amino acid and the
-gene families clusterings, respectively.
+_Protein clusters_ were built at 90% amino acid identity, which represent
+sequences with the same function. Broader families were built at higher
+thresholds too, namely 50%, 30%, and 20% (all subject to e-value thresholding,
+see the manuscript for details).
 
-- [Clustering table](http://gmgc.embl.de/downloads/v1.0/GMGC10.cluster.tsv.gz)
+- [Clustering table](http://gmgc.embl.de/downloads/v1.0/GMGC10.protein-clusters-families.tsv.gz)
+- [Clustering table (complete ORFs only)](http://gmgc.embl.de/downloads/v1.0/GMGC10.complete-orfs.protein-families.tsv.gz)
 
 ## Unigene Metadata & Annotations
 
