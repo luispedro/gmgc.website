@@ -184,7 +184,7 @@ layout model =
                 Grid.simpleRow
                 (case model.habitatFilter of
                 Nothing -> [ Grid.col [] [ Html.h4 [] [Html.text "Habitat filtering"]
-                                          , Html.p [] [Html.text "Click on the habitat names above to filter for genes matching a particular habitat."]
+                                          , Html.p [] [Html.text "Click on the habitat names above to filter for unigenes matching a particular habitat."]
                                           ]
                             ]
                 Just hab ->

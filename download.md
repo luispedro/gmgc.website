@@ -16,7 +16,7 @@ integrity checks.
 
 The 14 habitats considered in this version of the catalog give rise to 14
 different sub-catalogs. Additionally, for convenience, we provide versions
-which exclude rare genes and may be more appropriate for uses such as short
+which exclude rare unigenes and may be more appropriate for uses such as short
 read mapping.
 
 ## Clusters
@@ -75,9 +75,9 @@ size (in nucleotides), and whether the ORF is a complete ORF.
 
 ORFs are annotated to the environment from which they were assembled. Unigenes
 aggregate multiple ORFs and can, thus, represent multiple environments. The
-filegq
-[GMGC10.gene-environment.tsv](http://gmgc.embl.de/downloads/v1.0/metadata/GMGC10.gene-environment.tsv.gz)
-contains the link between genes and environments:
+file
+[GMGC10.unigene-environment.tsv](http://gmgc.embl.de/downloads/v1.0/metadata/GMGC10.unigene-environment.tsv.gz)
+contains the link between unigenes and environments:
 
 - `0`: the unigene does not contain any ORF from the respective environment,
 - `1`: the unigene contain at least one ORF from the respective environment,
@@ -115,9 +115,9 @@ This is a large table with 6 columns, representing 4 different sparse matrices:
 The meaning of `raw`, `scaled`, and `normed10m` are similar to that used in the
 [NGLess count function](https://ngless.embl.de/Functions.html#count), except
 that `normed10m` is scaled to 10 million reads. Briefly, `raw` is the number of
-reads mapped to the gene (distributed using option `{dist1}` in NGLess),
-`scaled` takes the size of each gene into account, and `normed10m` takes both
-the size of each gene and the number of reads in each sample.
+reads mapped to the unigene (distributed using option `{dist1}` in NGLess),
+`scaled` takes the size of each unigene into account, and `normed10m` takes both
+the size of each unigene and the number of reads in each sample.
 
 **Warning**: Note that this table file is 396GB (compressed) and contains
 35,790,210,719 rows. Make sure you have the resources to handle it prior to

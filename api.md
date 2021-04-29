@@ -27,7 +27,7 @@ Returns the version of the resource.
 
 ### Unigenes
 
-- `unigene/\<gene\_id\>`
+- `unigene/\<unigene\_id\>`
 
 Example output
 
@@ -49,7 +49,7 @@ Example output
 ```
 
 
-- `unigene/\<gene\_id\>/dna\_sequence`
+- `unigene/\<unigene\_id\>/dna\_sequence`
 
 ```
     {
@@ -60,12 +60,12 @@ Example output
     }
 ```
 
-- `unigene/\<gene\_id\>/protein\_sequence`
+- `unigene/\<unigene\_id\>/protein\_sequence`
 
 Same as above, but the field is called `protein\_sequence`
 
 
-- `unigene/\<gene\_id\>/features`
+- `unigene/\<unigene\_id\>/features`
 
 ```
     {
@@ -113,7 +113,7 @@ Same as above, but the field is called `protein\_sequence`
     }
 ```
 
-- `unigene/\<gene\_id\>/samples`
+- `unigene/\<unigene\_id\>/samples`
 
 ```
     {
@@ -126,7 +126,7 @@ Same as above, but the field is called `protein\_sequence`
     }
 ```
 
-- `unigene/\<gene\_id\>/genome\_bins`
+- `unigene/\<unigene\_id\>/genome\_bins`
 
 ```
     {
@@ -256,7 +256,7 @@ Parameters:
                 "query\_name": "Q1",
                 "hits":
                     [ # hits is always a list, but if the request included `mode=besthit`, this will be a list of size one.
-                    {"gene\_id": "GMGC10.000_000_000.NAME",
+                    {"unigene\_id": "GMGC10.000_000_000.NAME",
                      "evalue":12e-23,
                      "bitscore":232.2,
                         # sequences are only provided if the request included `return\_seqs=true`

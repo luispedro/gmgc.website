@@ -61,7 +61,7 @@ type alias Alignment =
 type alias Hit =
     { evalue : Float
     , bitscore : Float
-    , geneID : String
+    , unigeneID : String
     , taxon : String
     , habitat : String
     , origin : Maybe Sample
@@ -231,7 +231,7 @@ layout model =
                 Grid.simpleRow
                 (case model.habitatFilter of
                 Nothing -> [ Grid.col [] [ Html.h4 [] [Html.text "Habitat filtering"]
-                                          , Html.p [] [Html.text "Click on the habitat names above to filter for genes matching a particular habitat."]
+                                          , Html.p [] [Html.text "Click on the habitat names above to filter for unigenes matching a particular habitat."]
                                           ]
                             ]
                 Just hab ->
@@ -262,8 +262,8 @@ layout model =
                     , tbody = Table.tbody []
                             (List.concat <| List.indexedMap (\ix h ->
                                 [Table.tr []
-                                    [ Table.td [] [ Html.a [href ("http://gmgc.embl.de/search.cgi?search_id="++h.geneID)]
-                                                            [Html.text h.geneID ]]
+                                    [ Table.td [] [ Html.a [href ("http://gmgc.embl.de/search.cgi?search_id="++h.unigeneID)]
+                                                            [Html.text h.unigeneID ]]
                                     , Table.td [] [ Html.text (niceRound h.evalue ++ " ")
                                                     , Button.button [Button.secondary, Button.light, Button.small, Button.onClick (ShowAlignment ix)] [ Html.text "show alignment" ]
                                                   --, Html.a [href "#", onClick (ShowAlignment ix)] [Html.text " [show alignment]"]
@@ -351,7 +351,7 @@ viewMap model = viewSamplesInMap (List.filterMap (\h -> h.origin) <| activeHits 
 getSample : String -> Maybe Sample
 getSample n  = List.filter (\s -> n == s.name) gmgcV1samples |> List.head
 
-buildTestHit1 h = { evalue = h.evalue, bitscore = h.bitscore, geneID = h.geneID, taxon = h.taxon, habitat = h.habitat, origin = getSample h.origin, isComplete = h.isComplete, alignment = Nothing, showAlignment = False }
+buildTestHit1 h = { evalue = h.evalue, bitscore = h.bitscore, unigeneID = h.unigeneID, taxon = h.taxon, habitat = h.habitat, origin = getSample h.origin, isComplete = h.isComplete, alignment = Nothing, showAlignment = False }
 
 buildTestHits : List Hit
 buildTestHits = List.map buildTestHit1 testHits

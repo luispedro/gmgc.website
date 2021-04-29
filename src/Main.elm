@@ -219,7 +219,7 @@ viewChoice model =
             [ Html.h2 [] [ Html.text "GMGC Tools" ]
             , Grid.simpleRow
                 [ Grid.col [] [ Button.button (buttonStyle HaveSequence) [ Html.text "Find homologues to a sequence (BLAST-like)" ] ]
-                , Grid.col [] [ Button.button (buttonStyle HaveENOG) [ Html.text "Find a gene family (eggNOG orthologs)" ] ]
+                , Grid.col [] [ Button.button (buttonStyle HaveENOG) [ Html.text "Find a unigene family (eggNOG orthologs)" ] ]
                 , Grid.col [] [ Button.button (buttonStyle HaveGenome) [ Html.text "Map a (meta)genome to the GMGC"  ] ]
                 , Grid.col [] [ Button.button (buttonStyle WantBin) [ Html.text "Look for genomic bins"  ] ]
                 ]
